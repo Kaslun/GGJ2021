@@ -10,8 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 18461d7fd2c63b641977f951bd65b8fb, type: 3}
-  m_Name: Bob
+  m_Name: Jesus
   m_EditorClassIdentifier: 
-  name: Bobby Brown
+  name: Jesus J. Jameson
   avatar: {fileID: 0}
-  lostObject: {fileID: 11400000, guid: 06dcb4ccbd407cb4d8e24c5d54ddd7f4, type: 2}
+  lostObject: {fileID: 11400000, guid: 5d1811a3c5bcc374baa3c644e9a81b5e, type: 2}

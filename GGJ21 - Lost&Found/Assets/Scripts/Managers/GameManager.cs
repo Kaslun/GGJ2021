@@ -4,15 +4,13 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    public int score = 0;
 
-    // Update is called once per frame
-    void Update()
+    public static bool SameItem(Item lostItem, Item inStockItem)
     {
-        
+        if (lostItem == inStockItem)
+            return true;
+        else
+            return false;
     }
 }

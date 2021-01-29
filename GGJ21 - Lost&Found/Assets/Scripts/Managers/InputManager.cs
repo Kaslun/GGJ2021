@@ -4,15 +4,30 @@ using UnityEngine;
 
 public class InputManager : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    private GameManager gameManager;
+    private CharacterManager charManager;
+
+    public void Awake()
     {
-        
+        gameManager = FindObjectOfType<GameManager>();
+        charManager = FindObjectOfType<CharacterManager>();
     }
 
-    // Update is called once per frame
-    void Update()
+    public void Accept()
     {
-        
+        if (GameManager.SameItem(charManager.charItem, charManager.inStockItem))
+            gameManager.score++;
+        else
+            gameManager.score--;
+        charManager.ChangeCharacter();
+    }
+
+    public void Deny()
+    {
+        if (!GameManager.SameItem(charManager.charItem, charManager.inStockItem))
+            gameManager.score++;
+        else
+            gameManager.score--;
+        charManager.ChangeCharacter();
     }
 }
