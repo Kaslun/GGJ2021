@@ -9,6 +9,7 @@ public class MenuManager : MonoBehaviour
 
     [SerializeField]
     int currentMenu = 0;
+    int prevMenu;
 
     private void Awake()
     {
@@ -17,12 +18,20 @@ public class MenuManager : MonoBehaviour
 
     public void SwitchMenu(int newMenu)
     {
+        prevMenu = currentMenu;
+        currentMenu = newMenu;
+
         foreach(GameObject o in menus)
         {
             o.SetActive(false);
         }
 
-        menus[newMenu].SetActive(true);
+        menus[currentMenu].SetActive(true);
+    }
+
+    public void GoBack()
+    {
+        SwitchMenu(prevMenu);
     }
 
     public void ExitGame()
