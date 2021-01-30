@@ -10,47 +10,29 @@ public class InputManager : MonoBehaviour
 
     [SerializeField]
     private Transform avatar;
-    [SerializeField]
-    private Transform rightTarget;
-    [SerializeField]
-    private Transform leftTarget;
-
-    private Transform target;
-    private bool moveToTarget;
 
     private float startTime;
     public float minSwipeTime;
     public float minSwipeDist;
+    public float moveSensitivity;
     private float swipeThreshold = .7f;
     private Vector2 startPos;
-    private Vector3 avatarOrigin;
 
     public void Awake()
     {
         gameManager = FindObjectOfType<GameManager>();
         charManager = FindObjectOfType<CharacterManager>();
-        avatarOrigin = avatar.position;
     }
 
     private void Update()
     {
         TouchInput();
-
-        if (moveToTarget)
-        {
-            float distToTarget = Vector3.Distance(avatar.position, target.position);
-            if (distToTarget > 0.1)
-                Vector3.Lerp(avatar.position, target.position, Time.deltaTime);
-            else
-            {
-                moveToTarget = false;
-                avatar.position = avatarOrigin;
-            }
-        }
     }
 
     private void TouchInput()
     {
+#if UNITY_ANDROID
+        print("android");
         if (Input.touchCount > 0)
         {
             print("Started swipey");
@@ -64,7 +46,7 @@ public class InputManager : MonoBehaviour
                     break;
 
                 case TouchPhase.Moved:
-                    avatar.position = touch.position;
+                    Vector3.Lerp(avatar.position, touch.position, Time.deltaTime * moveSensitivity);
                     break;
 
                 case TouchPhase.Ended:
@@ -75,55 +57,85 @@ public class InputManager : MonoBehaviour
                     if (swipeDist > minSwipeDist && swipeTime > minSwipeTime)
                     {
                         //Checks right-swipe
-                        if (swipeDir.x > swipeThreshold)
-                            Accept();
+                        if (swipeDir.x > swipeThreshold) Accept();
                         //Checks left-swipe
-                        else if (swipeDir.x < -swipeThreshold)
-                            Deny();
+                        else if (swipeDir.x < -swipeThreshold) Deny();
                         //Checks up-swipe
-                        else if (swipeDir.y > swipeThreshold)
-                            ShowItem();
+                        else if (swipeDir.y > swipeThreshold) ShowItem();
                         //Checks down-swipe
-                        else if (swipeDir.y < -swipeThreshold)
-                            break;
-
+                        else if (swipeDir.y < -swipeThreshold) HideItem();
                     }
-                    else
-                        print("no swipe 5 u");
                     break;
-
             }
         }
+#endif
+#if UNITY_EDITOR_WIN
+        print("editor");
+        if (Input.GetMouseButton(0))
+        {
+            print("moving towards mouse");
+            Vector3.Lerp(avatar.position, Input.mousePosition, Time.deltaTime * moveSensitivity);
+
+            if (Input.GetMouseButtonDown(0))
+            {
+                startTime = Time.time;
+                startPos = Input.mousePosition;
+            }
+        }
+
+        if (Input.GetMouseButtonUp(0))
+        {
+            print("released mouse");
+            Vector2 mousePos = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
+            Vector2 swipeDir = (mousePos - startPos).normalized;
+            float swipeDist = (mousePos - startPos).magnitude;
+            float swipeTime = Time.time - startTime;
+
+            if (swipeDist > minSwipeDist && swipeTime > minSwipeTime)
+            {
+                print("swiiiper");
+                //Checks right-swipe
+                if (swipeDir.x > swipeThreshold) Accept();
+                //Checks left-swipe
+                else if (swipeDir.x < -swipeThreshold) Deny();
+                //Checks up-swipe
+                else if (swipeDir.y > swipeThreshold) ShowItem();
+                //Checks down-swipe
+                else if (swipeDir.y < -swipeThreshold) HideItem();
+            }
+            print("no swipe");
+        }
+#endif
     }
 
     public void Accept()
     {
-        target = rightTarget;
-        moveToTarget = true;
-
         if (GameManager.SameItem(charManager.charItem, charManager.inStockItem))
             gameManager.score++;
         else
             gameManager.score--;
 
-        charManager.ChangeCharacter();
+        EventManager.TriggerEvent("Next");
     }
 
     public void Deny()
     {
-        target = leftTarget;
-        moveToTarget = true;
-
         if (!GameManager.SameItem(charManager.charItem, charManager.inStockItem))
             gameManager.score++;
         else
             gameManager.score--;
 
-        charManager.ChangeCharacter();
+        EventManager.TriggerEvent("Next");
     }
 
-    private void ShowItem()
+    public void ShowItem()
     {
-        print("Showing " + charManager.inStockItem.name);
+        if(!anim.GetBool("isShowing"))
+            anim.SetBool("isShowing", true);
+    }
+    public void HideItem()
+    {
+        if (anim.GetBool("isShowing"))
+            anim.SetBool("isShowing", false);
     }
 }

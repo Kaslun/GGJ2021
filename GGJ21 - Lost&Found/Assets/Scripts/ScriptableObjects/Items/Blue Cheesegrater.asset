@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   name: Cheesegrater
   color: Blue
+  avatar: {fileID: 21300000, guid: 86df418c6c6cca742b0237f3833144a9, type: 3}

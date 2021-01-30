@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: Karl
   m_EditorClassIdentifier: 
   name: Karl Wheezer
-  avatar: {fileID: 0}
+  avatar: {fileID: 21300000, guid: 1356b3cb57658c94880a17e5b4a3eb99, type: 3}
   lostObject: {fileID: 11400000, guid: 63af1c6a4bef6af4a8cdb845b0221ba4, type: 2}

@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: Jesus
   m_EditorClassIdentifier: 
   name: Jesus J. Jameson
-  avatar: {fileID: 0}
-  lostObject: {fileID: 11400000, guid: 5d1811a3c5bcc374baa3c644e9a81b5e, type: 2}
+  avatar: {fileID: 21300000, guid: 7e2d0ec266a3d2a4ab95be28db7ded4b, type: 3}
+  lostObject: {fileID: 11400000, guid: 06dcb4ccbd407cb4d8e24c5d54ddd7f4, type: 2}

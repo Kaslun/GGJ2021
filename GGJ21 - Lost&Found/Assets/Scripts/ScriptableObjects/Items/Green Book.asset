@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   name: Book
   color: Green
+  avatar: {fileID: 21300000, guid: 6423379a9b6580d4eb551a0837b68a96, type: 3}

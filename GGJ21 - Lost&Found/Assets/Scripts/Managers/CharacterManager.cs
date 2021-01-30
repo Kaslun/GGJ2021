@@ -5,7 +5,8 @@ using UnityEngine.UI;
 
 public class CharacterManager : MonoBehaviour
 {
-    private RawImage avatar;
+    public Image charAvatar;
+    public Image itemAvatar;
     public Item charItem;
     public Item inStockItem;
 
@@ -16,26 +17,37 @@ public class CharacterManager : MonoBehaviour
 
     private void Awake()
     {
+        EventManager.StartListening("Next", Next);
+        ChangeCharacter();
+    }
+
+    private void Next()
+    {
+        //SpawnCharacter();
         ChangeCharacter();
     }
 
     public void ChangeCharacter()
     {
         int newChar = Random.Range(0, characters.Length);
+
         print("Changing");
         if (characters[newChar] == currentChar) ChangeCharacter();
 
         currentChar = characters[newChar];
 
-        UpdateCharacter(currentChar);
+        UpdateData(currentChar);
     }
 
-    private void UpdateCharacter(Character character)
+    private void UpdateData(Character character)
     {
         convoManager.character = character;
-        avatar = character.avatar;
+        charAvatar.sprite = character.avatar;
+
         character.lostObject = itemManager.NewItem();
         charItem = character.lostObject;
+
         inStockItem = itemManager.NewItem();
+        itemAvatar.sprite = inStockItem.avatar;
     }
 }

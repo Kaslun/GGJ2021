@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   name: Motorcycle
   color: Black
+  avatar: {fileID: 21300000, guid: 73a9871c5cac26d4d8d7070dc883e263, type: 3}
