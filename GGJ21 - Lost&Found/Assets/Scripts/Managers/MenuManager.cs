@@ -13,6 +13,7 @@ public class MenuManager : MonoBehaviour
 
     private void Awake()
     {
+        EventManager.StartListening("GoBack", GoBack);
         SwitchMenu(0);
     }
 
