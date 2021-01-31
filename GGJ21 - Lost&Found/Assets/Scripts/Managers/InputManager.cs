@@ -9,18 +9,19 @@ public class InputManager : MonoBehaviour
 
     public Animator cardAnim;
 
-    [SerializeField]
-    private Transform avatar;
+    public Transform avatar;
 
     private float startTime;
     public float minSwipeTime;
     public float minSwipeDist;
     public float moveSpeed;
     private float swipeThreshold = .7f;
+    public float distanceTreshold;
     private Vector2 startPos;
     public Transform origin;
 
-    private bool isSwiping;
+    public Transform rightTarget;
+    public Transform leftTarget;
 
     public void Awake()
     {
@@ -30,6 +31,7 @@ public class InputManager : MonoBehaviour
 
     private void Update()
     {
+        if (cardAnim == null) cardAnim = avatar.gameObject.GetComponent<Animator>();
         TouchInput();
 
 #if UNITY_ANDROID
@@ -56,7 +58,7 @@ public class InputManager : MonoBehaviour
 
                 case TouchPhase.Moved:
                     print("moving towards mouse");
-                    Vector3.MoveTowards(avatar.position, touch.position, Time.deltaTime * moveSpeed);              
+                    avatar.position = Vector2.MoveTowards(avatar.position, touch.position, moveSpeed);              
                     break;
 
                 case TouchPhase.Ended:;
@@ -72,6 +74,9 @@ public class InputManager : MonoBehaviour
                         //Checks left-swipe
                         else if (swipeDir.x < -swipeThreshold) Deny();
                     }
+
+                    print("moving back");
+                    avatar.position = Vector2.MoveTowards(avatar.position, origin.position, moveSpeed);
                     break;
             }
         }
@@ -84,7 +89,6 @@ public class InputManager : MonoBehaviour
 
             if (Input.GetMouseButtonDown(0))
             {
-                isSwiping = false;
                 cardAnim.SetBool("isMoving", true);
                 startTime = Time.time;
                 startPos = Input.mousePosition;
@@ -102,19 +106,36 @@ public class InputManager : MonoBehaviour
 
             if (swipeDist > minSwipeDist && swipeTime > minSwipeTime)
             {
-                isSwiping = true;
                 //Checks right-swipe
-                if (swipeDir.x > swipeThreshold) Accept();
+                if (swipeDir.x > swipeThreshold)
+                {
+                    Accept();
+                    MoveTowardsTarget(rightTarget);
+                }
                 //Checks left-swipe
-                else if (swipeDir.x < -swipeThreshold) Deny();
+                else if (swipeDir.x < -swipeThreshold)
+                {
+                    Deny();
+                    MoveTowardsTarget(leftTarget);
+                }
             }
         }
-        if(!Input.GetMouseButton(0) && !isSwiping)
+        if(!Input.GetMouseButton(0))
         {
             print("moving back");
             avatar.position = Vector2.MoveTowards(avatar.position, origin.position, moveSpeed);
         }
 #endif
+    }
+
+    public void MoveTowardsTarget(Transform target)
+    {
+        while(Vector2.Distance(avatar.position, target.position) < distanceTreshold)
+        {
+            print("Mocing towards " + target.name);
+            avatar.position = Vector2.MoveTowards(avatar.position, target.position, moveSpeed);
+            return;
+        }
     }
 
     public void Accept()

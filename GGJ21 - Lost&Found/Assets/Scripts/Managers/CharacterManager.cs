@@ -13,9 +13,14 @@ public class CharacterManager : MonoBehaviour
     public Text outputTxt;
     public Text itemTxt;
 
+    public GameObject characterPrefab;
+    public GameObject characterPanel;
+    public Transform characterPoint;
+
     public Character currentChar;
     public Character[] characters;
     public ItemManager itemManager;
+    public InputManager inputManager;
 
     private void Awake()
     {
@@ -24,9 +29,7 @@ public class CharacterManager : MonoBehaviour
 
     private void Next()
     {
-        //SpawnCharacter();
         ChangeCharacter();
-        UpdateText();
     }
 
     public void ChangeCharacter()
@@ -39,6 +42,17 @@ public class CharacterManager : MonoBehaviour
         currentChar = characters[newChar];
 
         UpdateData(currentChar);
+        UpdateText();
+        SpawnCharacter();
+    }
+
+    public void SpawnCharacter()
+    {
+        Destroy(inputManager.avatar.gameObject);
+        GameObject go = Instantiate(characterPrefab, characterPanel.transform);
+        go.name = currentChar.name;
+        go.transform.position = new Vector2(characterPoint.position.x, characterPoint.position.y - 300);
+        inputManager.avatar = go.transform;
     }
 
     private void UpdateData(Character character)
