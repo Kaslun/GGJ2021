@@ -15,13 +15,14 @@ public class InputManager : MonoBehaviour
     public float minSwipeTime;
     public float minSwipeDist;
     public float moveSpeed;
+    public float moveTimer;
     private float swipeThreshold = .7f;
     public float distanceTreshold;
     private Vector2 startPos;
+    private Vector2 swipeDir;
     public Transform origin;
 
-    public Transform rightTarget;
-    public Transform leftTarget;
+    private bool isSwiping = false;
 
     public void Awake()
     {
@@ -32,7 +33,9 @@ public class InputManager : MonoBehaviour
     private void Update()
     {
         if (cardAnim == null) cardAnim = avatar.gameObject.GetComponent<Animator>();
-        TouchInput();
+
+        if(!isSwiping)
+            TouchInput();
 
 #if UNITY_ANDROID
         if(Input.GetKey(KeyCode.Escape)){
@@ -70,21 +73,32 @@ public class InputManager : MonoBehaviour
                     if (swipeDist > minSwipeDist && swipeTime > minSwipeTime)
                     {
                         //Checks right-swipe
-                        if (swipeDir.x > swipeThreshold) Accept();
+                        if (swipeDir.x > swipeThreshold)
+                        {
+                            isSwiping = true;
+                            StartCoroutine(Accept());
+                            StartCoroutine(MoveCard(true));
+                        }
                         //Checks left-swipe
-                        else if (swipeDir.x < -swipeThreshold) Deny();
+                        else if (swipeDir.x < -swipeThreshold)
+                        {
+                            isSwiping = true;
+                            StartCoroutine(Deny());
+                            StartCoroutine(MoveCard(false));
+                        }
                     }
-
-                    print("moving back");
-                    avatar.position = Vector2.MoveTowards(avatar.position, origin.position, moveSpeed);
                     break;
             }
+        }
+
+        else if (Input.touchCount <= 0)
+        {
+            avatar.position = Vector2.MoveTowards(avatar.position, origin.position, moveSpeed);
         }
 #endif
 #if UNITY_EDITOR_WIN
         if (Input.GetMouseButton(0))
         {
-            print("moving towards mouse");
             avatar.position = Vector2.MoveTowards(avatar.position, Input.mousePosition, moveSpeed);
 
             if (Input.GetMouseButtonDown(0))
@@ -100,7 +114,7 @@ public class InputManager : MonoBehaviour
             cardAnim.SetBool("isMoving", false);
 
             Vector2 mousePos = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
-            Vector2 swipeDir = (mousePos - startPos).normalized;
+            swipeDir = (mousePos - startPos).normalized;
             float swipeDist = (mousePos - startPos).magnitude;
             float swipeTime = Time.time - startTime;
 
@@ -109,52 +123,65 @@ public class InputManager : MonoBehaviour
                 //Checks right-swipe
                 if (swipeDir.x > swipeThreshold)
                 {
-                    Accept();
-                    MoveTowardsTarget(rightTarget);
+                    isSwiping = true;
+                    StartCoroutine(Accept());
+                    StartCoroutine(MoveCard(true));
                 }
                 //Checks left-swipe
                 else if (swipeDir.x < -swipeThreshold)
                 {
-                    Deny();
-                    MoveTowardsTarget(leftTarget);
+                    isSwiping = true;
+                    StartCoroutine(Deny());
+                    StartCoroutine(MoveCard(false));
                 }
             }
         }
         if(!Input.GetMouseButton(0))
         {
-            print("moving back");
             avatar.position = Vector2.MoveTowards(avatar.position, origin.position, moveSpeed);
         }
 #endif
     }
 
-    public void MoveTowardsTarget(Transform target)
+    public IEnumerator MoveCard(bool isAccept)
     {
-        while(Vector2.Distance(avatar.position, target.position) < distanceTreshold)
+        float timer = 0;
+
+
+        while(timer < moveTimer)
         {
-            print("Mocing towards " + target.name);
-            avatar.position = Vector2.MoveTowards(avatar.position, target.position, moveSpeed);
-            return;
+            if (isAccept)
+                avatar.position = new Vector3(avatar.position.x + Vector2.right.x, avatar.position.y + Vector2.right.y);
+            else
+                avatar.position = new Vector3(avatar.position.x + Vector2.left.x, avatar.position.y + Vector2.left.y);
+            yield return new WaitForSeconds(.1f);
+            timer = timer + .1f;
         }
     }
 
-    public void Accept()
+    private IEnumerator Accept()
     {
+        yield return new WaitForSeconds(moveTimer);
         if (GameManager.SameItem(charManager.charItem, charManager.inStockItem))
             gameManager.score++;
         else
             gameManager.score--;
 
         EventManager.TriggerEvent("Next");
+
+        isSwiping = false;
     }
 
-    public void Deny()
+    private IEnumerator Deny()
     {
+        yield return new WaitForSeconds(moveTimer);
         if (!GameManager.SameItem(charManager.charItem, charManager.inStockItem))
             gameManager.score++;
         else
             gameManager.score--;
 
         EventManager.TriggerEvent("Next");
+
+        isSwiping = false;
     }
 }

@@ -9,8 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 18461d7fd2c63b641977f951bd65b8fb, type: 3}
-  m_Name: Karl
+  m_Script: {fileID: 11500000, guid: 64402ee2d82e8c14fa2ad9fbcc70cfba, type: 3}
+  m_Name: Cheesegrater
   m_EditorClassIdentifier: 
-  name: Karl Wheezer
-  lostObject: {fileID: 11400000, guid: 63af1c6a4bef6af4a8cdb845b0221ba4, type: 2}
+  name: Cheesegrater
+  color: Orange

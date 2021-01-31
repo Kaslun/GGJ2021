@@ -7,7 +7,5 @@ using UnityEngine.UI;
 public class Character : ScriptableObject
 {
     public new string name;
-    public Sprite avatar;
-
     public Item lostObject;
 }

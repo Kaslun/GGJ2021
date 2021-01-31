@@ -5,8 +5,6 @@ using UnityEngine.UI;
 
 public class CharacterManager : MonoBehaviour
 {
-    //public Image charAvatar;
-    public Image itemAvatar;
     public Item charItem;
     public Item inStockItem;
 
@@ -51,19 +49,15 @@ public class CharacterManager : MonoBehaviour
         Destroy(inputManager.avatar.gameObject);
         GameObject go = Instantiate(characterPrefab, characterPanel.transform);
         go.name = currentChar.name;
-        go.transform.position = new Vector2(characterPoint.position.x, characterPoint.position.y - 300);
+        go.transform.position = characterPoint.position;
         inputManager.avatar = go.transform;
     }
 
     private void UpdateData(Character character)
     {
-        //charAvatar.sprite = character.avatar;
-
         character.lostObject = itemManager.NewItem();
         charItem = character.lostObject;
-
         inStockItem = itemManager.NewItem();
-        itemAvatar.sprite = inStockItem.avatar;
     }
 
     private void UpdateText()
